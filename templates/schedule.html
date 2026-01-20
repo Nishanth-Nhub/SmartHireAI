@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Interview - SmartHire AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">SmartHire AI</div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#how-it-works">How It Works</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <a href="{{ url_for('login') }}" class="cta-button"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="{{ url_for('register') }}" class="cta-button"><i class="fas fa-user-plus"></i> Register</a>
+        </div>
+    </nav>
+
+    <section class="schedule-section">
+        <h2>Schedule Interview</h2>
+        <p>Select a convenient time for your interview.</p>
+        <form method="POST">
+            <label for="interview_time">Interview Time:</label>
+            <input type="datetime-local" id="interview_time" name="interview_time" required>
+            <button type="submit" class="cta-button"><i class="fas fa-calendar-check"></i> Schedule</button>
+        </form>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="/#features">Features</a>
+            <a href="/#how-it-works">How It Works</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </div>
+        <div class="contact-info">
+            <p>Email: support@smarthireai.com</p>
+            <p>Phone: +1-800-SMARTAI</p>
+        </div>
+        <p>© 2025 SmartHire AI. All rights reserved.</p>
+    </footer>
+</body>
+</html>

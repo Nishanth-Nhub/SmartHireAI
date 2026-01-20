@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - SmartHire AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">SmartHire AI</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#how-it-works">How It Works</a></li>
+            <li><a href="/contact">Contact</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <button class="sign-in" onclick="window.location.href='/login'"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            <button class="register" onclick="window.location.href='/register'"><i class="fas fa-user-plus"></i> Register</button>
+        </div>
+    </nav>
+
+    <section class="contact-section">
+        <h2>Contact Us</h2>
+        <p>Email: support@smarthireai.com</p>
+        <p>Phone: +1-800-SMARTAI</p>
+        <p>Have questions? Reach out—we’re here to help!</p>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/#features">Features</a>
+            <a href="/#how-it-works">How It Works</a>
+            <a href="/contact">Contact</a>
+        </div>
+        <div class="contact-info">
+            <p>Email: support@smarthireai.com</p>
+            <p>Phone: +1-800-SMARTAI</p>
+        </div>
+    </footer>
+
+    <button id="back-to-top" title="Back to Top"><i class="fas fa-arrow-up"></i></button>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

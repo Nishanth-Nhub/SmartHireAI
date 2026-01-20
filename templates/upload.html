@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - SmartHire AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">SmartHire AI</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#how-it-works">How It Works</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/upload">Upload Resume</a></li>
+        </ul>
+        <div id="auth-buttons" class="auth-buttons">
+            <!-- Logout button will be inserted by script.js if signed in -->
+        </div>
+    </nav>
+
+    <section class="upload-section">
+        <h2>Upload Your Resume</h2>
+        <form id="upload-form">
+            <div class="form-group">
+                <label for="resume">Select Resume (PDF)</label>
+                <input type="file" id="resume" accept=".pdf" required>
+            </div>
+            <button type="submit" class="cta-button">Analyze Resume</button>
+        </form>
+        <p id="loading" style="display: none;">Analyzing your resume...</p>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#how-it-works">How It Works</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <div class="contact-info">
+                <p>Email: support@smarthireai.com</p>
+                <p>Phone: +1-800-SMARTAI</p>
+            </div>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        <p class="footer-copy">© 2025 SmartHire AI. All rights reserved.</p>
+    </footer>
+
+    <button id="back-to-top" title="Back to Top"><i class="fas fa-arrow-up"></i></button>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

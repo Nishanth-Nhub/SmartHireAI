@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Analysis - SmartHire AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #F7EFE5 0%, #E2BFD9 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #000000;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 3rem auto;
+            padding: 1.5rem;
+        }
+        .section {
+            background: #F7EFE5;
+            border-radius: 1.25rem;
+            border: 2px solid #E2BFD9;
+            box-shadow: 0 8px 24px rgba(200, 161, 224, 0.15);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section:nth-child(5) { animation-delay: 0.5s; }
+        .section:nth-child(6) { animation-delay: 0.6s; }
+        .section:nth-child(7) { animation-delay: 0.7s; }
+        .section:hover {
+            box-shadow: 0 12px 32px rgba(200, 161, 224, 0.2);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            color: #674188;
+            font-weight: 800;
+            font-size: 3rem;
+            text-align: center;
+        }
+        h2 {
+            color: #674188;
+            font-weight: 600;
+            font-size: 1.75rem;
+        }
+        .btn {
+            background: #C8A1E0;
+            color: #000000;
+            padding: 0.75rem 1.75rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            background: #E2BFD9;
+            transform: scale(1.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #F7EFE5;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 1.25rem;
+            border-bottom: 1px solid #E2BFD9;
+        }
+        th {
+            background: #C8A1E0;
+            color: #000000;
+            font-weight: 600;
+        }
+        .chat-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #C8A1E0;
+            color: #000000;
+            padding: 1.25rem;
+            border-radius: 50%;
+            box-shadow: 0 6px 12px rgba(200, 161, 224, 0.3);
+            font-size: 1.75rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .chat-icon:hover {
+            transform: rotate(360deg);
+            box-shadow: 0 8px 16px rgba(200, 161, 224, 0.4);
+        }
+        #shap-chart, #skill-chart {
+            max-height: 450px;
+            width: 100%;
+            background: #F7EFE5;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(200, 161, 224, 0.1);
+        }
+        .progress-bar {
+            background: #E2BFD9;
+            border-radius: 0.5rem;
+            height: 1rem;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .progress-fill {
+            background: #C8A1E0;
+            height: 100%;
+            transition: width 1s ease-in-out;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto;
+        }
+        .score-circle svg {
+            transform: rotate(-90deg);
+        }
+        .score-circle circle {
+            fill: none;
+            stroke-width: 10;
+        }
+        .score-circle .bg {
+            stroke: #E2BFD9;
+        }
+        .score-circle .progress {
+            stroke: #674188;
+            stroke-dasharray: 314;
+            stroke-dashoffset: calc(314 - (314 * var(--progress)) / 100);
+            transition: stroke-dashoffset 1s ease;
+        }
+        .skill-card {
+            background: #F7EFE5;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .skill-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(200, 161, 224, 0.2);
+        }
+        .tips-toggle {
+            cursor: pointer;
+            color: #674188;
+            font-weight: 500;
+        }
+        .tips-content {
+            display: none;
+            margin-top: 1rem;
+        }
+        .tips-content.show {
+            display: block;
+        }
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #674188;
+            color: #F7EFE5;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .fit-ring {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto;
+        }
+        .fit-ring svg {
+            transform: rotate(-90deg);
+        }
+        .fit-ring circle {
+            fill: none;
+            stroke-width: 10;
+        }
+        .fit-ring .bg {
+            stroke: #E2BFD9;
+        }
+        .fit-ring .progress {
+            stroke: #674188;
+            stroke-dasharray: 314;
+            stroke-dashoffset: calc(314 - (314 * var(--progress)) / 100);
+            transition: stroke-dashoffset 1s ease;
+        }
+        .quick-tip {
+            background: #F7EFE5;
+            border-left: 4px solid #C8A1E0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .section {
+                padding: 1.5rem;
+            }
+            .btn {
+                padding: 0.5rem 1rem;
+            }
+            .chat-icon {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 1rem;
+                font-size: 1.5rem;
+            }
+            .fit-ring, .score-circle {
+                width: 100px;
+                height: 100px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-10">Talent Spotlight: {{ analysis_data.name or 'Candidate' }}</h1>
+
+        <!-- Candidate Summary -->
+        <div class="section">
+            <h2 class="mb-2">Candidate Snapshot</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: A quick overview of your strengths.</p>
+            <p class="text-lg leading-relaxed">
+                {{ analysis_data.name or 'Candidate' }} shines in {{ analysis_data.linkedin.mock_skills[:3]|join(", ") or "technical expertise" }}, bolstered by {{ analysis_data.certifications[:1]|join(", ") or "relevant certifications" }}.
+                They’re a strong fit for {{ analysis_data.recommended_roles.split(", ")[0] or "data-driven roles" }} with high potential.
+            </p>
+        </div>
+
+        <!-- Key Achievement -->
+        <div class="section">
+            <h2 class="mb-2">Key Achievement</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Highlights your standout contribution.</p>
+            <p class="text-lg">{{ analysis_data.key_achievement }}.</p>
+        </div>
+
+        <!-- Certifications -->
+        <div class="section">
+            <h2 class="mb-2">Certifications</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Validates your expertise.</p>
+            <ul class="list-disc ml-6">
+                {% for cert in analysis_data.certifications %}
+                    <li>{{ cert }}</li>
+                {% else %}
+                    <li>No certifications listed. Consider earning one!</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Score Overview -->
+        <div class="section">
+            <h2 class="mb-2">Score Breakdown</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Shows your strengths across platforms.</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center tooltip" data-tooltip="Overall candidate evaluation (0-100)">
+                    <p class="text-lg font-medium">Total Score</p>
+                    <p class="text-3xl font-bold text-[#674188]">{{ analysis_data.total_score }}/100</p>
+                    <div class="score-circle">
+                        <svg width="100%" height="100%">
+                            <circle class in="bg" cx="60" cy="60" r="50"></circle>
+                            <circle class="progress" cx="60" cy="60" r="50" style="--progress: {{ analysis_data.total_progress }};"></circle>
+                        </svg>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-[#674188]">
+                            {{ analysis_data.total_score }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center tooltip" data-tooltip="Based on resume skills, experience, education">
+                    <p class="text-lg font-medium">Resume Score</p>
+                    <p class="text-3xl font-bold text-[#674188]">{{ "%.1f"|format(analysis_data.resume_score) }}/40 ({{ analysis_data.resume_score_category }})</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-width="{{ analysis_data.resume_progress }}"></div>
+                    </div>
+                </div>
+                <div class="text-center tooltip" data-tooltip="Reflects GitHub repos, commits, followers">
+                    <p class="text-lg font-medium">GitHub Score</p>
+                    <p class="text-3xl font-bold text-[#674188]">{{ "%.1f"|format(analysis_data.github_score) }}/40</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-width="{{ analysis_data.github_progress }}"></div>
+                    </div>
+                </div>
+                <div class="text-center tooltip" data-tooltip="Evaluates LinkedIn skills, connections">
+                    <p class="text-lg font-medium">LinkedIn Score</p>
+                    <p class="text-3xl font-bold text-[#674188]">{{ "%.1f"|format(analysis_data.linkedin_score) }}/20</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-width="{{ analysis_data.linkedin_progress }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill Confidence -->
+        <div class="section">
+            <h2 class="mb-2">Skill Confidence</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Reflects your proficiency depth.</p>
+            <canvas id="skill-chart"></canvas>
+        </div>
+
+        <!-- Role Fit -->
+        <div class="section">
+            <h2 class="mb-2">Role Fit</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Shows alignment with job roles.</p>
+            <div class="fit-ring">
+                <svg width="100%" height="100%">
+                    <circle class="bg" cx="60" cy="60" r="50"></circle>
+                    <circle class="progress" cx="60" cy="60" r="50" style="--progress: {{ analysis_data.fit_score }};"></circle>
+                </svg>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-[#674188]">
+                    {{ "%.1f"|format(analysis_data.fit_score) }}%
+                </div>
+            </div>
+            <p class="text-center mt-4 text-lg font-medium text-[#674188]">
+                Best Fit: {{ analysis_data.recommended_roles.split(", ")[0] or "General Technical Role" }}
+            </p>
+        </div>
+
+        <!-- Top Skills -->
+        <div class="section">
+            <h2 class="mb-2">Top Skills</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Highlights your core strengths.</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {% for skill in analysis_data.linkedin.mock_skills[:4] %}
+                    <div class="skill-card">
+                        <i class="fas fa-code text-[#674188] text-2xl mb-2"></i>
+                        <p class="font-medium">{{ skill }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Performance Analysis -->
+        <div class="section">
+            <h2 class="mb-2">Performance Analysis</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Compares your scores visually.</p>
+            <canvas id="shap-chart"></canvas>
+        </div>
+
+        <!-- Resume Details -->
+        <div class="section">
+            <h2 class="mb-2">Resume Details</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Summarizes your profile.</p>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Value</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="tooltip" data-tooltip="Candidate's full name">Full name</td><td>{{ analysis_data.name or 'Candidate' }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Contact email">Email address</td><td>{{ analysis_data.email }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Contact phone number">Phone number</td><td>{{ analysis_data.phone }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Extracted technical skills">Technical skills</td><td>{{ analysis_data.linkedin.mock_skills|join(", ") or "N/A" }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Total years of experience">Work experience</td><td>{{ "%.1f"|format(analysis_data.years_experience) }} years</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Highest education level">Education level</td><td>{{ ["None", "Certificate", "Diploma", "Bachelor", "Master", "PhD"][analysis_data.education_level|int] }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Strengths and Weaknesses -->
+        <div class="section">
+            <h2 class="mb-2">Strengths & Improvement Areas</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Guides your growth plan.</p>
+            <p><strong>Strengths:</strong> {{ analysis_data.strengths|join(", ") }}</p>
+            <p><strong>Improvement Areas:</strong> {{ analysis_data.weaknesses|join(", ") or "None identified" }}</p>
+            <p class="tips-toggle mt-4"><i class="fas fa-lightbulb mr-2"></i>Show Improvement Tips</p>
+            <div class="tips-content">
+                <ul class="list-disc ml-6 mt-2">
+                    {% for weakness in analysis_data.weaknesses %}
+                        <li>{{ weakness }}: {{ "Join a data visualization repo on GitHub to boost activity." if "GitHub" in weakness else "Build a Tableau dashboard project to gain experience." if "experience" in weakness else "Earn a Python certification to strengthen credentials." }}</li>
+                    {% else %}
+                        <li>Keep advancing with complex data projects!</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="quick-tip">
+                <p><strong>Quick Tip:</strong> {{ "Contribute to Kaggle datasets to boost GitHub." if "GitHub" in analysis_data.weaknesses else "Create a portfolio with Tableau dashboards." }}</p>
+            </div>
+        </div>
+
+        <!-- GitHub Insights -->
+        <div class="section">
+            <h2 class="mb-2">GitHub Insights</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Shows your coding activity.</p>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Value</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="tooltip" data-tooltip="GitHub username">Username</td><td>{{ analysis_data.github.username }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Number of public repositories">Number of repositories</td><td>{{ analysis_data.github.repos }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Number of followers">Number of followers</td><td>{{ analysis_data.github.followers }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Total code contributions">Total commits</td><td>{{ analysis_data.github.commits }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Average stars per repository">Average stars</td><td>{{ "%.2f"|format(analysis_data.github.stars) }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Programming languages used">Languages used</td><td>{{ analysis_data.github.languages|join(", ") or "N/A" }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- LinkedIn Profile -->
+        <div class="section">
+            <h2 class="mb-2">LinkedIn Profile</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Reflects your professional network.</p>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Value</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="tooltip" data-tooltip="LinkedIn username">Username</td><td>{{ analysis_data.linkedin.username or "N/A" }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Number of connections">Number of connections</td><td>{{ analysis_data.linkedin.mock_connections or 0 }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Listed professional skills">Professional skills</td><td>{{ analysis_data.linkedin.mock_skills|join(", ") or "None" }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Skill endorsements received">Endorsements received</td><td>{{ analysis_data.linkedin.mock_endorsements or 0 }}</td></tr>
+                    <tr><td class="tooltip" data-tooltip="Profile headline">Profile headline</td><td>{{ analysis_data.linkedin.mock_headline or "N/A" }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Interview Toolkit -->
+        <div class="section">
+            <h2 class="mb-2">Interviewer Toolkit</h2>
+            <p class="text-sm text-gray-600 mb-4">Why This Matters: Prepares you for interviews.</p>
+            <p><strong>Top Projects:</strong> {{ analysis_data.github.top_repos|map(attribute='name')|join(", ") or "SmartHireAI" }}</p>
+            <p><strong>Career Trajectory:</strong> {{ analysis_data.trajectory }}</p>
+            <p><strong>Recommended Roles:</strong> {{ analysis_data.recommended_roles }}</p>
+            <p><strong>Suggested Questions:</strong></p>
+            <ul class="list-disc ml-6">
+                {% for q in analysis_data.interview_questions %}
+                    <li>{{ q }}</li>
+                {% endfor %}
+            </ul>
+            <div class="mt-6 flex flex-wrap gap-4">
+                <a href="{{ url_for('upload') }}" class="btn"><i class="fas fa-upload"></i> Back to Upload</a>
+                <a href="{{ url_for('schedule_interview') }}" class="btn"><i class="fas fa-calendar-alt"></i> Schedule Interview</a>
+                <a href="{{ url_for('download_report') }}" class="btn"><i class="fas fa-download"></i> Download Report</a>
+                <a href="#" id="share" class="btn"><i class="fas fa-share-alt"></i> Share Results</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Icon -->
+    <a href="{{ url_for('chatbot') }}" class="chat-icon" title="Chat with SmartHire AI">
+        <i class="fas fa-robot"></i>
+    </a>
+
+    <!-- Skill Confidence Data -->
+    <script type="application/json" id="skill-confidence-data">
+        {{ analysis_data.skill_confidence|tojson|safe }}
+    </script>
+
+    <script>
+        // Apply progress bar widths
+        document.querySelectorAll('.progress-fill').forEach(bar => {
+            const width = bar.getAttribute('data-width');
+            bar.style.width = `${width}%`;
+        });
+
+        // Score Chart
+        const scoreData = {
+            "Resume": Number("{{ analysis_data.resume_score | float }}"),
+            "GitHub": Number("{{ analysis_data.github_score | float }}"),
+            "LinkedIn": Number("{{ analysis_data.linkedin_score | float }}"),
+            "Fit": Number("{{ analysis_data.fit_score | float }}")
+        };
+
+        const scoreLabels = Object.keys(scoreData);
+        const scoreValues = Object.values(scoreData);
+
+        const scoreCtx = document.getElementById("shap-chart").getContext("2d");
+        new Chart(scoreCtx, {
+            type: "bar",
+            data: {
+                labels: scoreLabels,
+                datasets: [{
+                    label: "Score Contribution",
+                    data: scoreValues,
+                    backgroundColor: "#C8A1E0",
+                    borderColor: "#674188",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: "x",
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: "Score", color: "#674188", font: { size: 14 } },
+                        ticks: { color: "#000000", stepSize: 10 },
+                        max: 100
+                    },
+                    x: { 
+                        title: { display: true, text: "Category", color: "#674188", font: { size: 14 } },
+                        ticks: { color: "#000000", autoSkip: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw.toFixed(1)}`;
+                            }
+                        }
+                    }
+                },
+                maintainAspectRatio: false,
+                layout: {
+                    padding: { left: 30, right: 30, top: 20, bottom: 20 }
+                },
+                animation: {
+                    duration: 1500,
+                    easing: "easeOutQuart"
+                }
+            }
+        });
+
+        // Skill Confidence Chart
+        const skillConfidenceData = JSON.parse(document.getElementById("skill-confidence-data").textContent);
+        const skillData = {
+            labels: Object.keys(skillConfidenceData),
+            datasets: [{
+                label: "Confidence Level",
+                data: Object.values(skillConfidenceData),
+                backgroundColor: "#C8A1E0",
+                borderColor: "#674188",
+                borderWidth: 1
+            }]
+        };
+
+        const skillCtx = document.getElementById("skill-chart").getContext("2d");
+        new Chart(skillCtx, {
+            type: "bar",
+            data: skillData,
+            options: {
+                indexAxis: "x",
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: "Confidence (%)", color: "#674188", font: { size: 14 } },
+                        ticks: { color: "#000000", stepSize: 20 },
+                        max: 100
+                    },
+                    x: { 
+                        title: { display: true, text: "Skill", color: "#674188", font: { size: 14 } },
+                        ticks: { color: "#000000", autoSkip: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                maintainAspectRatio: false,
+                layout: {
+                    padding: { left: 30, right: 30, top: 20, bottom: 20 }
+                },
+                animation: {
+                    duration: 1500,
+                    easing: "easeOutQuart"
+                }
+            }
+        });
+
+        // Toggle Improvement Tips
+        document.querySelector(".tips-toggle").addEventListener("click", () => {
+            const content = document.querySelector(".tips-content");
+            content.classList.toggle("show");
+        });
+    </script>
+</body>
+</html>

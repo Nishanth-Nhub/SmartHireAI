@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHire AI - Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <style>
+        html, body { margin: 0; padding: 0; height: 100%; min-height: 100vh; font-family: Arial, sans-serif; background: radial-gradient(circle at center, #F7EFE5 0%, #E2BFD9 100%); color: #000; overflow: hidden; }
+        nav { background: linear-gradient(135deg, #E2BFD9 0%, #C8A1E0 100%); padding: 10px 20px; border-bottom: 2px solid #674188; box-shadow: 0 0 10px rgba(103, 65, 136, 0.3); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: bold; color: #000; }
+        .nav-links { list-style: none; display: flex; margin: 0; padding: 0; }
+        .nav-links li { margin: 0 15px; }
+        .nav-links a { color: #000; text-decoration: none; font-size: 16px; transition: color 0.3s ease; }
+        .nav-links a:hover { color: #674188; }
+        .chat-container { height: calc(100vh - 60px); display: flex; background: #F7EFE5; padding: 20px; box-sizing: border-box; }
+        .chat-history { width: 25%; max-width: 250px; overflow-y: auto; background: #E2BFD9; padding: 10px; border-radius: 10px; margin-right: 10px; }
+        .chat-history button { width: 100%; padding: 10px; background: #674188; color: #fff; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px; transition: transform 0.2s ease; }
+        .chat-history button:hover { transform: scale(1.05); }
+        .chat-history ul { list-style: none; padding: 0; }
+        .chat-history li { padding: 8px; cursor: pointer; background: #C8A1E0; margin-bottom: 5px; border-radius: 5px; color: #000; display: flex; justify-content: space-between; align-items: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0; animation: slideIn 0.3s ease forwards; }
+        .chat-history li:hover { background: #674188; color: #fff; transform: scale(1.02); transition: transform 0.2s ease; }
+        .chat-history li span { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+        .chat-history li i { margin-left: 5px; cursor: pointer; }
+        .chat-main { flex: 1; display: flex; flex-direction: column; height: 100%; position: relative; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; background: linear-gradient(135deg, rgba(247, 239, 229, 0.9) 0%, rgba(226, 191, 217, 0.9) 100%); border-radius: 10px; }
+        .chat-messages-inner { display: flex; flex-direction: column; min-height: 100%; }
+        .chat-message { margin-bottom: 15px; padding: 12px; border-radius: 8px; max-width: 80%; word-wrap: break-word; opacity: 0; animation: messageFadeSlide 0.5s ease forwards; }
+        .chat-message.user { background: #674188; color: #fff; margin-left: auto; text-align: right; }
+        .chat-message.bot { background: #C8A1E0; color: #000; margin-right: auto; }
+        .chat-message.bot a { color: #674188; text-decoration: underline; cursor: pointer; }
+        .chat-message.bot ul, .chat-message.bot ol { margin: 10px 0 10px 20px; padding-left: 10px; }
+        .greeting { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #674188; font-size: 32px; font-weight: bold; text-align: center; opacity: 0; transition: opacity 0.3s ease; text-shadow: 1px 1px 3px rgba(103, 65, 136, 0.3); }
+        .greeting.visible { opacity: 1; }
+        .chat-input-container { padding: 20px; background: #F7EFE5; }
+        .chat-input { display: flex; padding: 15px; background: #fff; border: 2px solid #674188; border-radius: 8px; align-items: center; box-shadow: 0 0 15px rgba(103, 65, 136, 0.3); width: 100%; max-width: 800px; margin: 0 auto; min-height: 60px; }
+        .chat-input input[type="text"] { flex: 1; padding: 10px; border: none; outline: none; color: #000; background: transparent; font-size: 18px; }
+        .chat-input input[type="file"] { display: none; }
+        .chat-input label { padding: 12px; background: linear-gradient(135deg, #C8A1E0 0%, #674188 100%); color: #fff; border-radius: 5px; cursor: pointer; margin-right: 15px; transition: background 0.3s ease, transform 0.2s ease; }
+        .chat-input label:hover { background: #674188; transform: scale(1.1); }
+        .chat-input button { padding: 12px 25px; background: linear-gradient(135deg, #C8A1E0 0%, #674188 100%); color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease; font-size: 16px; }
+        .chat-input button:hover { background: #674188; transform: scale(1.1); }
+        .typing-indicator { display: none; margin-bottom: 15px; }
+        .typing-indicator .dot { display: inline-block; width: 8px; height: 8px; background: #674188; border-radius: 50%; margin: 0 4px; animation: bounce 1.2s infinite; }
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+        .scroll-down-btn { position: absolute; bottom: 90px; right: 20px; background: linear-gradient(135deg, #C8A1E0 0%, #674188 100%); color: #fff; border: 2px solid #674188; border-radius: 50%; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 10px rgba(103, 65, 136, 0.3); transition: transform 0.2s ease, opacity 0.3s ease; z-index: 10; }
+        .scroll-down-btn:hover { transform: scale(1.1); }
+        .scroll-down-btn.visible { display: flex; opacity: 1; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes messageFadeSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        @media (max-width: 768px) { 
+            .nav-links { display: none; } 
+            .chat-container { padding: 10px; flex-direction: column; } 
+            .chat-history { width: 100%; max-width: none; margin-right: 0; margin-bottom: 10px; } 
+            .chat-messages { padding: 10px; } 
+            .chat-input-container { padding: 10px; } 
+            .chat-input { width: 100%; max-width: none; } 
+            .greeting { font-size: 24px; } 
+            .scroll-down-btn { bottom: 80px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">SmartHire AI</div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}#home">Home</a></li>
+            <li><a href="{{ url_for('index') }}#features">Features</a></li>
+            <li><a href="{{ url_for('index') }}#how-it-works">How It Works</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            <li><a href="{{ url_for('upload') }}">Upload</a></li>
+        </ul>
+    </nav>
+    <div class="chat-container">
+        <div class="chat-history" id="chatHistory">
+            <button onclick="newChat()">New Chat</button>
+        </div>
+        <div class="chat-main">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-messages-inner" id="chatMessagesInner"></div>
+            </div>
+            <div class="greeting" id="greetingText">Welcome to SmartHire AI—Your Robot Recruiter!</div>
+            <button class="scroll-down-btn" id="scrollDownBtn" title="Scroll to latest"><i class="fas fa-angle-double-down"></i></button>
+            <div class="chat-input-container">
+                <div class="chat-input" id="chatInputBar">
+                    <label for="fileInput"><i class="fas fa-paperclip"></i></label>
+                    <input type="file" id="fileInput" accept=".pdf" onchange="uploadFile()">
+                    <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let chats = JSON.parse(localStorage.getItem("smartHireChats")) || [];
+        let currentChatId = null;
+
+        const funnyResponses = [
+            "I’m not a real HR person, but I’d hire you for your typing speed!",
+            "Analyzing your vibe… yep, you’re hired by the robot council!",
+            "I’d give you a job, but I spent my budget on coffee for the server!",
+            "Beep boop! You’re 87% awesome—wanna talk jobs or snacks?",
+            "Error 404: Serious answer not found. How about a joke instead?"
+        ];
+
+        window.onload = function() {
+            const messagesInner = document.getElementById("chatMessagesInner");
+            const greeting = document.getElementById("greetingText");
+            messagesInner.innerHTML = "";
+            updateChatHistory();
+            if (chats.length === 0) {
+                greeting.classList.add("visible");
+            } else {
+                greeting.classList.remove("visible");
+            }
+            setupScrollButton();
+        };
+
+        function setupScrollButton() {
+            const messages = document.getElementById("chatMessages");
+            const scrollDownBtn = document.getElementById("scrollDownBtn");
+
+            messages.addEventListener("scroll", () => {
+                const isAtBottom = messages.scrollTop + messages.clientHeight >= messages.scrollHeight - 10;
+                scrollDownBtn.classList.toggle("visible", !isAtBottom);
+            });
+
+            scrollDownBtn.addEventListener("click", () => {
+                messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+            });
+        }
+
+        function newChat() {
+            const newChat = {
+                id: Date.now().toString(),
+                name: `Chat ${chats.length + 1}`,
+                messages: [{ sender: "bot", text: "Hey there! I’m your robot recruiter—here to help with resumes, jobs, or just to roast your skills. What’s up?" }]
+            };
+            chats.push(newChat);
+            currentChatId = newChat.id;
+            loadChat(currentChatId);
+            saveChats();
+            updateChatHistory();
+        }
+
+        function loadChat(chatId) {
+            currentChatId = chatId;
+            const chat = chats.find(c => c.id === chatId);
+            const messagesInner = document.getElementById("chatMessagesInner");
+            const messages = document.getElementById("chatMessages");
+            const greeting = document.getElementById("greetingText");
+            messagesInner.innerHTML = "";
+            greeting.classList.remove("visible");
+            chat.messages.forEach(msg => {
+                const div = document.createElement("div");
+                div.className = `chat-message ${msg.sender}`;
+                div.innerHTML = msg.sender === "bot" ? marked.parse(msg.text) : msg.text;
+                messagesInner.appendChild(div);
+            });
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const messagesInner = document.getElementById("chatMessagesInner");
+            const messages = document.getElementById("chatMessages");
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "typing-indicator";
+            typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            typingDiv.style.display = "flex";
+            messagesInner.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+            return typingDiv;
+        }
+
+        function hideTypingIndicator(typingDiv) {
+            if (typingDiv && typingDiv.parentNode) {
+                typingDiv.parentNode.removeChild(typingDiv);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("chatInput");
+            const messagesInner = document.getElementById("chatMessagesInner");
+            const messages = document.getElementById("chatMessages");
+            const greeting = document.getElementById("greetingText");
+            const userMessage = input.value.trim();
+
+            if (!userMessage) return;
+
+            greeting.classList.remove("visible");
+
+            if (!currentChatId) newChat();
+
+            const userMsgDiv = document.createElement("div");
+            userMsgDiv.className = "chat-message user";
+            userMsgDiv.textContent = userMessage;
+            messagesInner.appendChild(userMsgDiv);
+            const currentChat = chats.find(c => c.id === currentChatId);
+            currentChat.messages.push({ sender: "user", text: userMessage });
+            saveChats();
+            updateChatHistory();
+            messages.scrollTop = messages.scrollHeight;
+
+            input.value = "";
+
+            const typingDiv = showTypingIndicator();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            fetch("{{ url_for('chat') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator(typingDiv);
+                const botMsgDiv = document.createElement("div");
+                botMsgDiv.className = "chat-message bot";
+                botMsgDiv.innerHTML = marked.parse(data.message);
+                messagesInner.appendChild(botMsgDiv);
+                currentChat.messages.push({ sender: "bot", text: data.message });
+                saveChats();
+                messages.scrollTop = messages.scrollHeight;
+            })
+            .catch(error => {
+                hideTypingIndicator(typingDiv);
+                console.error("Chat error:", error);
+                const randomFunny = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
+                const botMsgDiv = document.createElement("div");
+                botMsgDiv.className = "chat-message bot";
+                botMsgDiv.innerHTML = marked.parse(randomFunny);
+                messagesInner.appendChild(botMsgDiv);
+                currentChat.messages.push({ sender: "bot", text: randomFunny });
+                saveChats();
+                messages.scrollTop = messages.scrollHeight;
+            });
+        }
+
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const messagesInner = document.getElementById("chatMessagesInner");
+            const messages = document.getElementById("chatMessages");
+            const greeting = document.getElementById("greetingText");
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            greeting.classList.remove("visible");
+
+            if (!currentChatId) newChat();
+
+            const userMsgDiv = document.createElement("div");
+            userMsgDiv.className = "chat-message user";
+            userMsgDiv.textContent = `Uploading resume: ${file.name}`;
+            messagesInner.appendChild(userMsgDiv);
+            const currentChat = chats.find(c => c.id === currentChatId);
+            currentChat.messages.push({ sender: "user", text: `Uploading resume: ${file.name}` });
+            saveChats();
+            updateChatHistory();
+            messages.scrollTop = messages.scrollHeight;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const typingDiv = showTypingIndicator();
+
+            fetch("{{ url_for('upload_resume') }}", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator(typingDiv);
+                const botMsgDiv = document.createElement("div");
+                botMsgDiv.className = "chat-message bot";
+                botMsgDiv.innerHTML = marked.parse(`Resume uploaded! Check your score at [Results]({{ url_for('result') }}). Wanna talk jobs now?`);
+                messagesInner.appendChild(botMsgDiv);
+                currentChat.messages.push({ sender: "bot", text: `Resume uploaded! Check your score at [Results]({{ url_for('result') }}). Wanna talk jobs now?` });
+                saveChats();
+                updateChatHistory();
+                messages.scrollTop = messages.scrollHeight;
+                fileInput.value = "";
+            })
+            .catch(error => {
+                hideTypingIndicator(typingDiv);
+                console.error("Upload error:", error);
+                const botMsgDiv = document.createElement("div");
+                botMsgDiv.className = "chat-message bot";
+                botMsgDiv.textContent = `Upload failed: ${error.message}. Guess I’ll stick to hiring robots!`;
+                messagesInner.appendChild(botMsgDiv);
+                currentChat.messages.push({ sender: "bot", text: `Upload failed: ${error.message}. Guess I’ll stick to hiring robots!` });
+                saveChats();
+                updateChatHistory();
+                messages.scrollTop = messages.scrollHeight;
+            });
+        }
+
+        function saveChats() {
+            localStorage.setItem("smartHireChats", JSON.stringify(chats));
+        }
+
+        function updateChatHistory() {
+            const history = document.getElementById("chatHistory");
+            const button = history.querySelector("button");
+            history.innerHTML = "";
+            history.appendChild(button);
+            const ul = document.createElement("ul");
+            chats.forEach((chat, index) => {
+                const li = document.createElement("li");
+                li.style.animationDelay = `${index * 0.05}s`;
+                const span = document.createElement("span");
+                span.textContent = chat.name;
+                span.onclick = () => loadChat(chat.id);
+                const renameIcon = document.createElement("i");
+                renameIcon.className = "fas fa-edit";
+                renameIcon.onclick = (e) => { e.stopPropagation(); renameChat(chat.id); };
+                const deleteIcon = document.createElement("i");
+                deleteIcon.className = "fas fa-trash";
+                deleteIcon.onclick = (e) => { e.stopPropagation(); deleteChat(chat.id); };
+                li.appendChild(span);
+                li.appendChild(renameIcon);
+                li.appendChild(deleteIcon);
+                ul.appendChild(li);
+            });
+            history.appendChild(ul);
+        }
+
+        function renameChat(chatId) {
+            const newName = prompt("Enter new chat name:");
+            if (newName) {
+                const chat = chats.find(c => c.id === chatId);
+                chat.name = newName;
+                saveChats();
+                updateChatHistory();
+            }
+        }
+
+        function deleteChat(chatId) {
+            if (confirm("Delete this chat?")) {
+                chats = chats.filter(c => c.id !== chatId);
+                saveChats();
+                if (chats.length > 0 && currentChatId === chatId) {
+                    loadChat(chats[chats.length - 1].id);
+                } else if (chats.length === 0) {
+                    currentChatId = null;
+                    document.getElementById("chatMessagesInner").innerHTML = "";
+                    document.getElementById("greetingText").classList.add("visible");
+                }
+                updateChatHistory();
+            }
+        }
+    </script>
+</body>
+</html>

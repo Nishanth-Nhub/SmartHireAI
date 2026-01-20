@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHire AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SmartHire AI Logo" class="logo-img">
+            <span>SmartHire AI</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/upload">Upload Resume</a></li>
+            <li><a href="/chatbot">Chatbot</a></li>
+        </ul>
+        <div id="auth-buttons" class="auth-buttons"></div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Unlock Your Career Potential</h1>
+            <p>SmartHire AI: Your personal recruiter powered by artificial intelligence.</p>
+            <button class="cta-button" onclick="window.location.href='/upload'">Get Started</button>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>Why Choose SmartHire AI?</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <i class="fas fa-file-upload"></i>
+                <h3>Resume Analysis</h3>
+                <p>Upload your resume for instant, actionable insights.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-robot"></i>
+                <h3>AI Chatbot</h3>
+                <p>Get personalized career advice from our smart assistant.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-calendar-alt"></i>
+                <h3>Interview Scheduling</h3>
+                <p>Plan interviews seamlessly with our tools.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <span class="step-number">1</span>
+                <i class="fas fa-upload"></i>
+                <p>Upload your resume.</p>
+            </div>
+            <div class="step-item">
+                <span class="step-number">2</span>
+                <i class="fas fa-search"></i>
+                <p>Get analyzed by AI.</p>
+            </div>
+            <div class="step-item">
+                <span class="step-number">3</span>
+                <i class="fas fa-comment"></i>
+                <p>Chat with our assistant.</p>
+            </div>
+            <div class="step-item">
+                <span class="step-number">4</span>
+                <i class="fas fa-check"></i>
+                <p>Schedule your interview.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonials">
+        <h2>What Our Users Say</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-item">
+                <i class="fas fa-user-circle"></i>
+                <p>"SmartHire AI transformed my job search with actionable resume feedback!"</p>
+                <h3>Jane Doe</h3>
+                <span>Software Engineer</span>
+            </div>
+            <div class="testimonial-item">
+                <i class="fas fa-user-circle"></i>
+                <p>"The AI chatbot gave me confidence for my interviews. Highly recommend!"</p>
+                <h3>John Smith</h3>
+                <span>Marketing Manager</span>
+            </div>
+            <div class="testimonial-item">
+                <i class="fas fa-user-circle"></i>
+                <p>"Scheduling interviews was a breeze with SmartHire AI's tools."</p>
+                <h3>Emily Chen</h3>
+                <span>Data Analyst</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="cta" class="cta-section">
+        <h2>Ready to Elevate Your Career?</h2>
+        <p>Join thousands of professionals using SmartHire AI to land their dream jobs.</p>
+        <button class="cta-button" onclick="window.location.href='/upload'">Get Started Now</button>
+    </section>
+
+    <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <h3 class="faq-question">How does SmartHire AI analyze my resume?</h3>
+            <p class="faq-answer">Our AI evaluates your resume based on industry standards, keywords, and formatting to provide tailored suggestions.</p>
+        </div>
+        <div class="faq-item">
+            <h3 class="faq-question">Is my data secure with SmartHire AI?</h3>
+            <p class="faq-answer">Yes, we use advanced encryption to protect your personal information and uploaded files.</p>
+        </div>
+        <div class="faq-item">
+            <h3 class="faq-question">Can I use the chatbot without uploading a resume?</h3>
+            <p class="faq-answer">Absolutely! Our chatbot is available to answer career-related questions anytime.</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <div class="contact-info">
+                <p>Email: support@smarthireai.com</p>
+                <p>Phone: +1-800-SMARTAI</p>
+            </div>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        <p class="footer-copy">© 2025 SmartHire AI. All rights reserved.</p>
+    </footer>
+
+    <button id="back-to-top" title="Back to Top"><i class="fas fa-arrow-up"></i></button>
+    <a href="/chatbot" class="chatbot-icon" title="Chat with SmartHire AI">
+        <i class="fas fa-robot"></i>
+    </a>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
