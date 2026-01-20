@@ -94,17 +94,15 @@ The system focuses on **guidance, clarity, and career growth**, not rejection or
 
 ## 📂 Project Structure
 
-SmartHireAI/
-│── app.py
-│── train_model.py
-│── generate_training_data.py
-│── data/
-│── templates/
-│── static/
-│── screenshots/
-│── README.md
-│── .gitignore
-
+├── app.py # Main Flask application
+├── train_model.py # ML model training script
+├── generate_training_data.py # Dataset generation logic
+├── data/ # Training and processed data
+├── templates/ # HTML templates
+├── static/ # CSS, JS, assets
+├── screenshots/ # Application screenshots
+├── README.md # Project documentation
+├── .gitignore # Ignored files and folders
 
 ---
 
