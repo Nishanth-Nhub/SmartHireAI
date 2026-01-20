@@ -105,7 +105,6 @@ The system focuses on **guidance, clarity, and career growth**, not rejection or
 - ├── README.md # Project documentation
 - ├── .gitignore # Ignored files and folders
 
----
 
 
 ## 📸 Application Screenshots
