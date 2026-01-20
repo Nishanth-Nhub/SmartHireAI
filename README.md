@@ -66,5 +66,45 @@ The system does **not replace recruiters**, but helps them make faster and more 
 
 ---
 
+## 📸 Application Screenshots
+
+Below are selected screenshots demonstrating the complete workflow of SmartHire AI,
+from resume upload to candidate analysis and interview support.
+
+### 🏠 Home Page
+Landing page introducing SmartHire AI and its purpose.
+![Home Page](screenshots/home_page.png)
+
+---
+
+### 📄 Resume Upload
+Candidates can upload their resume in PDF format for analysis.
+![Resume Upload](screenshots/resume_upload.png)
+
+---
+
+### 📊 Candidate Analysis Result
+AI-generated insights highlighting skills, strengths, and career alignment.
+![Candidate Result](screenshots/result_page.png)
+
+---
+
+### 🗓 Interview Scheduling
+Allows candidates to select a convenient interview time.
+![Schedule Interview](screenshots/schedule_interview.png)
+
+---
+
+### 🤖 AI Chatbot Support
+Built-in chatbot to assist users with career guidance and project ideas.
+![Chatbot](screenshots/chatbot.png)
+
+---
+
+### 📑 Report Generation
+Automatically generated report summarizing candidate evaluation.
+![Report Generation](screenshots/report_generation.png)
+
+
 ## 📂 Project Structure
 
