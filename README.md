@@ -94,6 +94,7 @@ The system focuses on **guidance, clarity, and career growth**, not rejection or
 
 ## 📂 Project Structure
 
+SmartHireAI/
 ├── app.py # Main Flask application
 ├── train_model.py # ML model training script
 ├── generate_training_data.py # Dataset generation logic
@@ -104,7 +105,7 @@ The system focuses on **guidance, clarity, and career growth**, not rejection or
 ├── README.md # Project documentation
 ├── .gitignore # Ignored files and folders
 
----
+
 
 ## 📸 Application Screenshots
 
